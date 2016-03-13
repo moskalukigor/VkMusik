@@ -1,6 +1,7 @@
 package com.aproject.vkmusik;
 
 import android.app.Application;
+import android.content.Intent;
 import android.util.Log;
 
 import com.vk.sdk.VKSdk;
@@ -25,5 +26,9 @@ public class GlobalApplication extends Application{
         super.onCreate();
         VKSdk.initialize(this);
         Log.d(TAG, "VKSdk initialize");
+
+        Intent auth = new Intent(this, AuthActivity.class);
+        auth.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(auth);
     }
 }
