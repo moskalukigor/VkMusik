@@ -1,5 +1,6 @@
 package com.aproject.vkmusik;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
@@ -31,6 +32,12 @@ public class MainActivity extends AppCompatActivity {
     private static ListView listAudio;
 
 
+    private static List<String> nameList = new ArrayList<String>();
+    private static List<String> artistList = new ArrayList<String>();
+    private static List<String> durationList = new ArrayList<String>();
+    private static List<String> srcAudioList = new ArrayList<String>();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,10 +47,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(auth);
 
 
+
         btnStart = (Button)findViewById(R.id.btnStart);
         listAudio = (ListView)findViewById(R.id.listAudio);
 
-        listAudio.setVisibility(View.INVISIBLE);
+        //listAudio.setVisibility(View.INVISIBLE);
 
 
     }
@@ -55,6 +63,22 @@ public class MainActivity extends AppCompatActivity {
         getAudio();
     }
 
+    public void fillListView(List<String> names,List<String> artists,List<String> durations,List<String> srcs)
+    {
+        String[] nameListStr = new String[ names.size() ];
+        String[] artistListStr = new String[ artists.size() ];
+        String[] durationListStr = new String[ durations.size() ];
+        String[] srcAudioListStr = new String[ srcs.size() ];
+        names.toArray(nameListStr);
+        artists.toArray(artistListStr);
+        durations.toArray(durationListStr);
+        srcs.toArray(srcAudioListStr);
+
+        listAudio.setAdapter(new CustomListViewAdapter(this, nameListStr, artistListStr, durationListStr, srcAudioListStr));
+        listAudio.setVisibility(View.VISIBLE);
+        //listAudio.setBackgroundColor(Color.MAGENTA);
+        btnStart.setVisibility(View.INVISIBLE);
+    }
 
     public void getAudio()
     {
@@ -63,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
         VKRequest request = VKApi.audio().get(VKParameters.from(VKApiConst.OWNER_ID, ownerId,VKApiConst.COUNT,5000));
         request.attempts = 10;
 
-        final List<String> listNames = new ArrayList<String>();
 
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
@@ -73,23 +96,18 @@ public class MainActivity extends AppCompatActivity {
                 for(int i = 0;i<((VKList<VKApiAudio>)response.parsedModel).size();i++){
                     VKApiAudio vkApiAudio = ((VKList<VKApiAudio>)response.parsedModel).get(i);
 
-                    listNames.add(i,vkApiAudio.title);
+                    nameList.add(i,vkApiAudio.title);
+                    artistList.add(i, vkApiAudio.artist);
+                    durationList.add(i,vkApiAudio.duration+"");
+                    srcAudioList.add(i,vkApiAudio.url);
+
 
                 }
-
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                        getApplicationContext(),
-                        android.R.layout.simple_list_item_1,
-                        listNames);
-                listAudio.setAdapter(arrayAdapter);
-                listAudio.setVisibility(View.VISIBLE);
-                listAudio.setBackgroundColor(Color.BLACK);
-                btnStart.setVisibility(View.INVISIBLE);
-
+                fillListView(nameList,artistList,durationList,srcAudioList);
             }
         });
 
-    }
+}
 
 
 
