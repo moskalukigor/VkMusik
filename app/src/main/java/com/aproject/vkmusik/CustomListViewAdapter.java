@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,30 +15,42 @@ import java.io.IOException;
 /**
  * Created by igor on 13.03.16.
  */
-public class CustomListViewAdapter extends BaseAdapter {
+public class CustomListViewAdapter extends BaseAdapter{
 
+    MainActivity mAct;
     Context context;
+    View view;
+
+
     String[] names;
     String[] artists;
     String[] durations;
     String[] srcAudio;
     private static LayoutInflater inflater=null;
 
-    private boolean isPlaySong = false;
-
-    AudioPlay ap;
 
 
-    public CustomListViewAdapter(MainActivity mainActivity, String[] audioNameList, String[] audioArtistList, String[] audioDurationList, String[] audioSrc) {
+    ImageView imgStopPlay;
+
+    private static final String TAG = "Log_CustomListViewAdapter";
+
+
+    public CustomListViewAdapter(MainActivity mainActivity,View viewApp, String[] audioNameList, String[] audioArtistList, String[] audioDurationList, String[] audioSrc) {
+
+        mAct = mainActivity;
         context = mainActivity;
+        view = viewApp;
+
         names = audioNameList;
         artists = audioArtistList;
         durations = audioDurationList;
         srcAudio = audioSrc;
 
-        context = mainActivity;
+
         inflater = ( LayoutInflater )context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        imgStopPlay = (ImageView) view.findViewById(R.id.imgViewPlayPause);
 
     }
 
@@ -54,6 +67,8 @@ public class CustomListViewAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
+
+
 
     public class Holder
     {
@@ -82,30 +97,28 @@ public class CustomListViewAdapter extends BaseAdapter {
         holder.duration.setText(durations[position]);
         holder.srcSong.setTag(srcAudio[position]);
 
+
+
+
+
         rowView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 try {
 
-                    if (isPlaySong == true) {
-                        ap.StopSong();
-                        isPlaySong = false;
-                    }
+                    mAct.playSong(names[position], artists[position], durations[position], srcAudio[position]);
 
-                    ap = new AudioPlay(names[position], artists[position], durations[position], srcAudio[position]);
-                    ap.PlaySong();
-                    isPlaySong = true;
-
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
                 }
 
                 Toast.makeText(context, "You Clicked " + names[position], Toast.LENGTH_LONG).show();
             }
         });
 
+
+
         return rowView;
     }
+
 }

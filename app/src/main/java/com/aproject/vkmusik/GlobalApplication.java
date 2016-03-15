@@ -12,6 +12,7 @@ public class GlobalApplication extends Application{
 
     public String token = "";
     public Integer userId;
+    public AudioPlay ap;
 
     public void setToken(String tkn) { token = tkn; }
     public void setUserId(Integer usrId) { userId = usrId; }
@@ -20,6 +21,7 @@ public class GlobalApplication extends Application{
         return token;
     }
     public Integer getUserId() { return userId; }
+
 
     @Override
     public void onCreate() {
